@@ -2,20 +2,25 @@
 
 require('dotenv').config();
 const express = require('express');
+const webhookRouter = require('./src/bot/webhook');
 
 const app = express();
-app.use(express.json());
+
+// Twilio sends form-encoded payloads (not JSON)
 app.use(express.urlencoded({ extended: false }));
 
-// Health check — Railway uses this to confirm the app is alive
+// Health check — Railway pings this
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Placeholder webhook — replaced on Day 3 with real Twilio handler
-app.post('/webhook/whatsapp', (req, res) => {
-  console.log('Received webhook — session pending');
-  res.status(200).send('<Response></Response>');
+// All /webhook/* routes
+app.use('/webhook', webhookRouter);
+
+// Generic error handler — never leak stack traces to the client
+app.use((err, req, res, next) => {
+  console.error('Server error:', err.message);
+  res.status(500).send('Internal server error');
 });
 
 const PORT = process.env.PORT || 3000;
