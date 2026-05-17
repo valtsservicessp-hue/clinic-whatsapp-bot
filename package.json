@@ -7,6 +7,9 @@
     "start": "node index.js",
     "test": "jest"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/valtsservicessp-hue/clinic-whatsapp-bot.git"
